@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}CryptexQ — Team{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Page-specific styles for Team page */
+.team-card{
+  margin-top: 3.5rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 3rem;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.team-card h1{
+  font-size: 2.8rem;
+  background: linear-gradient(90deg, #3B82F6, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.team-card h2{
+  color: var(--accent-blue);
+  margin: 2rem 0 1rem 0;
+  font-size: 1.5rem;
+}
+
+.team-card ul{
+  list-style: none;
+  margin-top: 1rem;
+}
+
+.team-card ul li{
+  padding: 1.2rem 1.5rem;
+  margin-bottom: 0.75rem;
+  border-radius: 12px;
+  background: rgba(59, 130, 246, 0.05);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  color: var(--text-secondary);
+  transition: all 0.3s;
+  font-size: 1.1rem;
+}
+
+.team-card ul li:hover{
+  background: rgba(59, 130, 246, 0.15);
+  transform: translateX(10px);
+  box-shadow: 0 5px 20px rgba(59, 130, 246, 0.3);
+}
+
+.team-card ul li::before{
+  content: "👤 ";
+  margin-right: 0.5rem;
+}
+
+footer{
+  margin-top: 4rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  padding: 2rem 0;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <section class="team-card fade-in">
+    <h1>Project Team</h1>
+
+    <h2>Developed by</h2>
+    <ul>
+      <li>Ojas Sanjay Patil</li>
+      <li>Ishwari Ajaykumar Patil</li>
+      <li>Pragathi Singh</li>
+    </ul>
+  </section>
+
+  <footer>
+    <p>© 2026 CryptexQ — Quantum-Safe Messaging Platform</p>
+  </footer>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- AOS animations -->
+<link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script>
+  AOS.init({ duration: 900, once: true });
+</script>
+{% endblock %}

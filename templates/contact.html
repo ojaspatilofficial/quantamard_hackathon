@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{% block title %}CryptexQ — Contact{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Page-specific styles for Contact page */
+.contact-hero{
+  margin-top: 3.5rem;
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.contact-hero h1{
+  font-size: 2.8rem;
+  background: linear-gradient(90deg, #3B82F6, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 1rem;
+}
+
+.contact-hero p{
+  max-width: 700px;
+  margin: 0 auto;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+}
+
+.panel{
+  margin-top: 3rem;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 3rem;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.split{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+}
+
+.split form{
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.split form label{
+  display: block;
+  color: var(--accent-blue);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.split form input, .split form textarea{
+  width: 100%;
+  padding: 0.9rem 1.2rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-primary);
+  font-size: 1rem;
+  transition: all 0.3s;
+}
+
+.split form input:focus, .split form textarea:focus{
+  outline: none;
+  border-color: var(--accent-blue);
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.split form button{
+  background: var(--accent-blue);
+  color: white;
+  padding: 0.9rem 2rem;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.split form button:hover{
+  background: var(--accent-cyan);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
+}
+
+.note{
+  padding: 0.8rem 1.2rem;
+  border-radius: 8px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: var(--accent-green);
+  font-size: 0.9rem;
+}
+
+.info-box{
+  padding: 2rem;
+  background: rgba(59, 130, 246, 0.05);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 16px;
+}
+
+.info-box h2{
+  color: var(--accent-blue);
+  margin-bottom: 1rem;
+}
+
+.info-box p{
+  color: var(--text-secondary);
+  line-height: 1.8;
+  margin-bottom: 1rem;
+}
+
+footer{
+  margin-top: 4rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  padding: 2rem 0;
+}
+
+@media(max-width: 768px){
+  .split{
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <section class="contact-hero fade-in">
+    <h1>Contact CryptexQ</h1>
+    <p>
+      Questions about quantum-safe messaging, replay protection,
+      or academic collaboration? Reach out securely.
+    </p>
+  </section>
+
+  <section class="panel fade-in">
+    <div class="split">
+      <div>
+        <form id="contactForm">
+          <div>
+            <label>Name</label>
+            <input type="text" required placeholder="Your full name">
+          </div>
+
+          <div>
+            <label>Email</label>
+            <input type="email" required placeholder="you@university.edu">
+          </div>
+
+          <div>
+            <label>Message</label>
+            <textarea rows="5" required placeholder="Your message..."></textarea>
+          </div>
+
+          <button type="submit">Send Message</button>
+          <div class="note" id="result" style="display:none;"></div>
+        </form>
+      </div>
+
+      <div class="info-box">
+        <h2>Secure Communication</h2>
+        <p>
+          CryptexQ prioritizes secure-by-design communication.
+          For sensitive enquiries, request a secure channel or
+          include a public key for encrypted replies.
+        </p>
+
+        <p class="note">
+          This contact form is a demonstration interface
+          for academic purposes.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2026 CryptexQ — Quantum-Safe Messaging Platform</p>
+  </footer>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById("contactForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const resultDiv = document.getElementById("result");
+  resultDiv.style.display = "block";
+  resultDiv.textContent = "✅ Message queued successfully (demo).";
+  e.target.reset();
+});
+</script>
+{% endblock %}

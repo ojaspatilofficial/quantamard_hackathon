@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+
+{% block title %}CryptexQ - Quantum-Safe Messaging{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Force dark theme - override any cached styles */
+body {
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364) !important;
+    color: #ffffff !important;
+}
+
+/* Ensure sections don't have white backgrounds */
+section, div {
+    background-color: transparent !important;
+}
+
+/* Dark container */
+.container {
+    background: transparent !important;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container fade-in">
+
+  <!-- HERO SECTION -->
+  <section class="hero" style="position:relative; overflow:hidden;">
+    
+    <canvas id="heroCanvas" 
+            style="position:absolute; inset:0; opacity:0.25; z-index:0;"></canvas>
+
+    <div style="position:relative; z-index:1;" class="text-center">
+
+      <div class="page-header">
+        <p class="badge">⚛ Quantum-Safe Communication</p>
+
+        <h1>
+          CryptexQ: End-to-End <br>
+          <span style="
+              background: linear-gradient(45deg, #00c6ff, #0072ff);
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;">
+              Secure Messaging
+          </span>
+        </h1>
+
+        <p class="mt-2" style="max-width:800px; margin:auto; opacity:0.85;">
+          CryptexQ uses quantum-resistant cryptography and next-generation encryption
+          to protect private communication — even against future quantum computers.
+        </p>
+
+        <a href="{{ url_for('demo_page') }}" class="btn btn-primary mt-3">
+          Get Started
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FEATURE CARDS -->
+  <section class="mt-4">
+
+    <div class="card-container">
+
+      <div class="card slide-in">
+        <h3>🔑 Secure Key Exchange</h3>
+        <p>
+          Quantum-inspired + post-quantum key negotiation ensures your
+          communications remain private.
+        </p>
+      </div>
+
+      <div class="card slide-in">
+        <h3>🔐 Zero Knowledge Server</h3>
+        <p>
+          Messages are encrypted before reaching the server.
+          We never see your data.
+        </p>
+      </div>
+
+      <div class="card slide-in">
+        <h3>🛡 Replay Protection</h3>
+        <p>
+          Nonces & freshness checks block message reuse
+          and replay attacks.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- HOW IT WORKS -->
+  <section class="panel mt-4 text-center">
+
+    <h2>🔎 How CryptexQ Works</h2>
+
+    <p class="mt-2" style="max-width:800px; margin:auto; opacity:0.85;">
+      CryptexQ integrates quantum cryptography and classical cybersecurity
+      to ensure your messages remain unbreakable even against
+      future quantum computers.
+    </p>
+
+    <div class="card-container mt-3">
+
+      <div class="card">
+        <h3>Key Generation</h3>
+        <p>Quantum bits are generated using QKD protocols ensuring randomness and security.</p>
+      </div>
+
+      <div class="card">
+        <h3>Encryption</h3>
+        <p>Your message is encrypted using one-time pad techniques combined with quantum-safe keys.</p>
+      </div>
+
+      <div class="card">
+        <h3>Secure Transmission</h3>
+        <p>Messages travel securely across the network with no chance of eavesdropping.</p>
+      </div>
+
+      <div class="card">
+        <h3>Decryption</h3>
+        <p>The recipient uses the shared quantum key to safely unlock the original message.</p>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- WHY CRYPTEXQ -->
+  <section class="panel mt-4 text-center">
+
+    <h2>🚀 Why CryptexQ?</h2>
+
+    <p class="mt-2" style="max-width:800px; margin:auto; opacity:0.85;">
+      Traditional encryption like RSA and AES may be broken by future quantum computers.
+      CryptexQ combines QKD-inspired key exchange with post-quantum cryptography,
+      ensuring your data remains future-proof.
+    </p>
+
+    <div class="card-container mt-3">
+
+      <div class="card">✔ QKD-inspired Secure Key Exchange (Simulated)</div>
+      <div class="card">✔ End-to-End Encrypted Messages (AES-256)</div>
+      <div class="card">✔ Protection from Man-in-the-Middle Attacks</div>
+      <div class="card">✔ Educational Demo + Real-World Architecture</div>
+
+    </div>
+  </section>
+
+
+  <!-- HOW TO USE -->
+  <section class="panel mt-4 text-center">
+
+    <h2>📘 How to Use CryptexQ</h2>
+
+    <p class="mt-2" style="max-width:800px; margin:auto; opacity:0.85;">
+      Getting started with CryptexQ is simple. Just follow these steps:
+    </p>
+
+    <div class="card-container mt-3">
+
+      <div class="card">
+        <h3>Step 1: Create Account</h3>
+        <p>Register and generate your personal quantum key pair.</p>
+      </div>
+
+      <div class="card">
+        <h3>Step 2: Share Key</h3>
+        <p>Exchange your quantum key securely with your contact.</p>
+      </div>
+
+      <div class="card">
+        <h3>Step 3: Send Message</h3>
+        <p>Encrypt your message using the shared key and send instantly.</p>
+      </div>
+
+      <div class="card">
+        <h3>Step 4: Decrypt Message</h3>
+        <p>The recipient decrypts safely using the shared key.</p>
+      </div>
+
+    </div>
+  </section>
+
+</div>
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+(function() {
+  const canvas = document.getElementById('heroCanvas');
+  if (!canvas) return;
+
+  const ctx = canvas.getContext('2d');
+
+  function resize() {
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+  }
+
+  resize();
+  window.addEventListener('resize', resize);
+
+  const particles = [];
+  const particleCount = 50;
+
+  class Particle {
+    constructor() {
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height;
+      this.vx = (Math.random() - 0.5) * 0.5;
+      this.vy = (Math.random() - 0.5) * 0.5;
+      this.radius = Math.random() * 2 + 1;
+      this.opacity = Math.random() * 0.5 + 0.2;
+    }
+
+    update() {
+      this.x += this.vx;
+      this.y += this.vy;
+
+      if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+      if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+    }
+
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(0, 198, 255, ${this.opacity})`;
+      ctx.fill();
+    }
+  }
+
+  for (let i = 0; i < particleCount; i++) {
+    particles.push(new Particle());
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    particles.forEach(p => {
+      p.update();
+      p.draw();
+    });
+
+    particles.forEach((p1, i) => {
+      particles.slice(i + 1).forEach(p2 => {
+        const dx = p1.x - p2.x;
+        const dy = p1.y - p2.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < 120) {
+          ctx.beginPath();
+          ctx.moveTo(p1.x, p1.y);
+          ctx.lineTo(p2.x, p2.y);
+          ctx.strokeStyle = `rgba(0, 198, 255, ${0.15 * (1 - dist / 120)})`;
+          ctx.stroke();
+        }
+      });
+    });
+
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+})();
+</script>
+{% endblock %}

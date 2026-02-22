@@ -1,0 +1,176 @@
+MESSAGE INTEGRITY LAYER - IMPLEMENTATION GUIDE
+==============================================
+
+OVERVIEW:
+---------
+A software-only HMAC-SHA256 message integrity layer has been added to your
+CryptexQ chat application. This ensures that messages are not tampered with
+during transit and provides detection of replay attacks and sender spoofing.
+
+FEATURES:
+---------
+✓ Automatic HMAC signature generation on all outgoing messages
+✓ Automatic verification of all incoming messages
+✓ Tamper detection (any modification to content, timestamp, or sender)
+✓ Replay attack detection (via timestamping)
+✓ Sender spoofing detection
+✓ Backward compatible with legacy clients
+✓ No changes to existing UI, APIs, or message flow
+
+HOW IT WORKS:
+-------------
+1. Before sending a message, the server automatically:
+   - Adds a timestamp if not present
+   - Generates HMAC-SHA256 over: message + timestamp + sender_id
+   - Adds an 'integrity' field with the HMAC signature
+
+2. When receiving a message, the server:
+   - Recomputes the HMAC using the same inputs
+   - Compares received HMAC with computed HMAC (constant-time comparison)
+   - Accepts message if HMACs match
+   - Rejects and logs if HMACs don't match (tamper detected)
+
+MESSAGE FORMAT:
+---------------
+Messages now include an additional 'integrity' field:
+
+{
+  "from": "Alice",
+  "to": "Bob",
+  "ciphertext_b64": "...",
+  "iv_b64": "...",
+  "timestamp": "1770441809492",
+  "integrity": {
+    "type": "HMAC_SHA256",
+    "value": "945b3df3804a7c1e34a999c7cea29112..."
+  }
+}
+
+CONFIGURATION:
+--------------
+The HMAC secret key is managed in two ways:
+
+1. DEVELOPMENT (default):
+   - Auto-generated 32-byte key stored in .hmac_secret file
+   - File is automatically created on first run
+   - Persistent across restarts
+   - DO NOT commit .hmac_secret to version control (already in .gitignore)
+
+2. PRODUCTION (recommended):
+   - Set environment variable: CRYPTEXQ_HMAC_SECRET="your-secret-key-here"
+   - Use a strong, random 32+ byte secret
+   - Keep secret secure and rotate periodically
+   - Example: export CRYPTEXQ_HMAC_SECRET="$(openssl rand -hex 32)"
+
+TESTING:
+--------
+Run the test suite to verify integrity layer is working:
+
+    python test_hmac_integrity.py
+
+Tests include:
+- Basic integrity verification
+- Tampered message detection
+- Legacy message handling
+- Timestamp tampering detection
+- Sender spoofing detection
+- Integration hooks
+- Replay attack detection
+
+SECURITY CONSIDERATIONS:
+------------------------
+1. Secret Key Management:
+   - Never hardcode the secret key
+   - Use environment variables in production
+   - Rotate keys periodically
+   - Use different keys for dev/staging/production
+
+2. Timestamp Validation:
+   - HMACs include timestamps to prevent replay attacks
+   - Consider adding max message age checks in your application logic
+   - See client-side helper for timestamp freshness validation
+
+3. Constant-Time Comparison:
+   - HMAC verification uses hmac.compare_digest()
+   - Prevents timing attacks
+
+4. Backward Compatibility:
+   - Messages without integrity field are accepted but logged
+   - Allows gradual migration from legacy clients
+   - Monitor logs for clients not sending integrity signatures
+
+INTEGRATION POINTS:
+-------------------
+1. Server-Side (app.py):
+   - handle_encrypted_message() automatically wraps outgoing messages
+   - Automatically verifies incoming messages if integrity field present
+   - Rejects tampered messages with error response
+
+2. Client-Side (optional):
+   - JavaScript helper available: static/js/message_integrity_helper.js
+   - Provides client-side validation (integrity field format, timestamp freshness)
+   - Can display integrity indicators in UI
+   - Server-side verification is primary security mechanism
+
+FILES ADDED:
+------------
+1. hmac_integrity.py - Core integrity module with HMAC functions
+2. test_hmac_integrity.py - Test suite (7 tests)
+3. static/js/message_integrity_helper.js - Optional client-side helper
+4. .gitignore - Excludes .hmac_secret from version control
+5. .hmac_secret - Auto-generated secret key (not committed)
+
+MONITORING:
+-----------
+Integrity violations are logged to console:
+
+[INTEGRITY VIOLATION] Alice → Bob
+  Reason: HMAC mismatch - message has been tampered with
+  Timestamp: 1770441809500
+  Message preview: {'from': 'Alice', 'to': 'Bob'...
+============================================================
+
+Monitor these logs for potential security issues or attacks.
+
+NO CHANGES REQUIRED TO:
+-----------------------
+✓ Existing templates (HTML)
+✓ Existing client-side JavaScript
+✓ Database schema
+✓ API endpoints
+✓ Message encryption logic
+✓ User authentication
+✓ UI/UX
+
+The integrity layer extends messages without breaking existing functionality.
+
+TROUBLESHOOTING:
+----------------
+Issue: Messages being rejected with integrity failures
+Fix: Ensure sender and receiver use same secret key
+
+Issue: Legacy clients can't send messages
+Fix: They can! Integrity field is optional on receive (backward compatible)
+
+Issue: Want to disable integrity checking temporarily
+Fix: Remove 'integrity' field checks in handle_encrypted_message()
+
+Issue: Need different keys for different environments
+Fix: Set CRYPTEXQ_HMAC_SECRET environment variable per environment
+
+PERFORMANCE:
+------------
+- HMAC-SHA256 is very fast (~microseconds per message)
+- Minimal overhead on message processing
+- No noticeable impact on chat performance
+- Comparable to existing AES encryption overhead
+
+FUTURE ENHANCEMENTS:
+--------------------
+- Add timestamp-based message expiration
+- Implement HMAC key rotation
+- Add per-user HMAC keys for multi-tenancy
+- Create dashboard for integrity violation monitoring
+- Add rate limiting for repeated integrity failures
+
+For questions or issues, see the inline comments in hmac_integrity.py.

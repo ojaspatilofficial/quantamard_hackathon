@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CryptexQ - How to Access</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            color: #333;
+        }
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .error-box {
+            background: #fee;
+            border-left: 4px solid #e53e3e;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .success-box {
+            background: #e6fffa;
+            border-left: 4px solid #38b2ac;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .code {
+            background: #2d3748;
+            color: #68d391;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            margin: 10px 5px;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-3px);
+        }
+        .step {
+            background: #f7fafc;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .center {
+            text-align: center;
+            margin: 30px 0;
+        }
+        ul {
+            line-height: 2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 CryptexQ Access Guide</h1>
+        
+        <div class="error-box">
+            <h3>❌ Wrong Way (Don't do this!):</h3>
+            <p>Opening HTML files directly by double-clicking them will show errors like:</p>
+            <div class="code">Cannot GET /EDI-SY1/templates/%7B%7B%20url_for('about_page')...</div>
+        </div>
+        
+        <div class="success-box">
+            <h3>✅ Correct Way:</h3>
+            <p>Access the application through the Flask server!</p>
+        </div>
+        
+        <h2>📋 Step-by-Step Instructions:</h2>
+        
+        <div class="step">
+            <strong>Step 1:</strong> Open PowerShell or Command Prompt
+        </div>
+        
+        <div class="step">
+            <strong>Step 2:</strong> Navigate to the project directory
+            <div class="code">cd "D:\College\Projects\CRYPTEXQ (2)\EDI-SY1"</div>
+        </div>
+        
+        <div class="step">
+            <strong>Step 3:</strong> Start the Flask server
+            <div class="code">python app.py</div>
+            Or double-click: <code>start_server.bat</code>
+        </div>
+        
+        <div class="step">
+            <strong>Step 4:</strong> Wait for the server to start (you'll see):
+            <div class="code">🚀 CryptexQ Server running with HTTPS
+ * Running on https://0.0.0.0:5000</div>
+        </div>
+        
+        <div class="step">
+            <strong>Step 5:</strong> Open your browser and go to:
+            <div class="code">https://localhost:5000/home</div>
+        </div>
+        
+        <div class="step">
+            <strong>Step 6:</strong> Accept the SSL certificate warning:
+            <ul>
+                <li><strong>Chrome/Edge:</strong> Click "Advanced" → "Proceed to localhost (unsafe)"</li>
+                <li><strong>Firefox:</strong> Click "Advanced" → "Accept the Risk and Continue"</li>
+            </ul>
+        </div>
+        
+        <div class="center">
+            <h2>🚀 Quick Access Links</h2>
+            <p><strong>Make sure the server is running first!</strong></p>
+            <a href="https://localhost:5000/" class="btn">Index Page</a>
+            <a href="https://localhost:5000/home" class="btn">Home Dashboard</a>
+            <a href="https://localhost:5000/talkroom" class="btn">Talk Room</a>
+            <a href="https://localhost:5000/demo" class="btn">Demo</a>
+            <a href="https://localhost:5000/about" class="btn">About</a>
+        </div>
+        
+        <h2>🔧 Troubleshooting:</h2>
+        
+        <div class="step">
+            <strong>If server won't start:</strong>
+            <ul>
+                <li>Install dependencies: <code>pip install flask flask-cors flask-socketio pymongo</code></li>
+                <li>Check Python is installed: <code>python --version</code></li>
+                <li>Make sure you're in the EDI-SY1 directory</li>
+            </ul>
+        </div>
+        
+        <div class="step">
+            <strong>If pages are blank:</strong>
+            <ul>
+                <li>Make sure you're accessing via <code>https://localhost:5000</code></li>
+                <li>Don't open HTML files directly from file explorer</li>
+                <li>Clear browser cache (Ctrl + Shift + Delete)</li>
+            </ul>
+        </div>
+        
+        <h2>📌 Important Notes:</h2>
+        <ul>
+            <li>✅ Always access via <code>https://localhost:5000/pagename</code></li>
+            <li>❌ Never double-click HTML files</li>
+            <li>✅ Keep the terminal/PowerShell window open while using the app</li>
+            <li>✅ Press <code>Ctrl+C</code> in the terminal to stop the server</li>
+        </ul>
+        
+        <div class="center" style="margin-top: 40px;">
+            <p style="color: #718096;">CryptexQ - Quantum-Safe Secure Messaging Platform</p>
+        </div>
+    </div>
+</body>
+</html>

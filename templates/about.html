@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}CryptexQ — About{% endblock %}
+
+{% block content %}
+<div class="container">
+  <!-- Hero Section -->
+  <section class="hero fade-in">
+    <h1>About CryptexQ</h1>
+    <p>
+      CryptexQ is an academic secure-communication platform designed to demonstrate
+      modern cryptography, post-quantum security concepts, and attack-resilient messaging.
+    </p>
+  </section>
+
+  <!-- About Content -->
+  <section class="panel">
+    <h2>Project Overview</h2>
+    <p>
+      CryptexQ simulates secure end-to-end communication by combining classical encryption,
+      post-quantum cryptography concepts, and attack-mitigation techniques.
+      It focuses on <strong>education, experimentation, and future-ready security design</strong>.
+    </p>
+
+    <h2 class="mt-3">Key Features</h2>
+    <div class="card-container mt-2">
+      <div class="card">
+        <h3>🔐 End-to-End Encryption</h3>
+        <p>Session-based encrypted messaging using AES-256-GCM</p>
+      </div>
+      <div class="card">
+        <h3>🛡️ Replay Protection</h3>
+        <p>Protection using timestamps and nonces</p>
+      </div>
+      <div class="card">
+        <h3>⚛️ Post-Quantum Ready</h3>
+        <p>PQC and simulated QKD (BB84)</p>
+      </div>
+    </div>
+
+    <h2 class="mt-4">Objectives</h2>
+    <div class="grid-2 mt-2">
+      <div class="card">
+        <p>✓ Demonstrate secure communication workflows</p>
+      </div>
+      <div class="card">
+        <p>✓ Bridge cryptography theory with implementations</p>
+      </div>
+      <div class="card">
+        <p>✓ Highlight quantum-era security challenges</p>
+      </div>
+      <div class="card">
+        <p>✓ Prepare for real QKD / PQC integration</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2026 CryptexQ — Quantum-Safe Messaging Platform</p>
+  </footer>
+</div>
+{% endblock %}
+

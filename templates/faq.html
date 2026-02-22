@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}CryptexQ — FAQ{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Page-specific styles for FAQ page */
+.faq-hero{
+  margin-top: 3.5rem;
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.faq-hero h1{
+  font-size: 2.8rem;
+  background: linear-gradient(90deg, #3B82F6, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 1rem;
+}
+
+.faq-panel{
+  margin-top: 3rem;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 3rem;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.faq-item{
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 1rem;
+}
+
+.faq-question{
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 1.2rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--accent-blue);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.3s;
+}
+
+.faq-question:hover{
+  color: var(--accent-cyan);
+}
+
+.faq-question::after{
+  content: "+";
+  font-size: 1.6rem;
+  color: var(--accent-blue);
+  transition: transform 0.3s;
+}
+
+.faq-question.active::after{
+  content: "−";
+  transform: rotate(180deg);
+}
+
+.faq-answer{
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+  padding: 0 1rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+.faq-answer.open{
+  max-height: 300px;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: rgba(59, 130, 246, 0.05);
+  border-radius: 8px;
+}
+
+footer{
+  margin-top: 4rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  padding: 2rem 0;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <section class="faq-hero fade-in">
+    <h1>Frequently Asked Questions</h1>
+  </section>
+
+  <section class="faq-panel fade-in">
+    <div class="faq-item">
+      <button class="faq-question">What is CryptexQ?</button>
+      <div class="faq-answer">CryptexQ is a secure quantum-safe messaging platform that combines Quantum Key Distribution (QKD) with AES-GCM encryption to ensure end-to-end privacy.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question">How does QKD work?</button>
+      <div class="faq-answer">QKD uses quantum mechanics (such as the BB84 protocol) to securely exchange cryptographic keys. Any attempt to eavesdrop alters the quantum states, alerting the users.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question">Is CryptexQ unbreakable?</button>
+      <div class="faq-answer">While no system is 100% unbreakable, combining QKD with AES-GCM provides strong protection against both classical and quantum computer attacks.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question">Do I need special hardware to use CryptexQ?</button>
+      <div class="faq-answer">Real-world QKD requires quantum hardware. However, CryptexQ offers a simulation-based demo that works without special devices.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question">Can I access CryptexQ on mobile?</button>
+      <div class="faq-answer">Yes. CryptexQ's interface is fully responsive and works on desktops, tablets, and mobile devices.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question">What encryption algorithms are used?</button>
+      <div class="faq-answer">CryptexQ primarily uses AES-256-GCM for message encryption and integrates keys exchanged securely using Quantum Key Distribution.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question">Is an internet connection required?</button>
+      <div class="faq-answer">Yes. CryptexQ requires an active connection for sending messages and exchanging keys, though local simulations may work offline.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question">Who can use CryptexQ?</button>
+      <div class="faq-answer">CryptexQ is designed for researchers, students, cybersecurity enthusiasts, and organizations interested in quantum-safe communication.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question">Can someone eavesdrop on my messages?</button>
+      <div class="faq-answer">With QKD, any attempt to eavesdrop is detectable. Messages are also encrypted with AES-GCM, making unauthorized access extremely difficult.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question">What protocols are implemented?</button>
+      <div class="faq-answer">CryptexQ supports the BB84 quantum key distribution protocol and uses standard AES-GCM for secure message encryption and authentication.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question">Is CryptexQ faster than normal messaging apps?</button>
+      <div class="faq-answer">Quantum key generation can be slower than traditional methods, but once established, AES-GCM ensures fast and efficient message encryption/decryption.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question">Is CryptexQ open-source?</button>
+      <div class="faq-answer">CryptexQ is primarily a research project. Depending on licensing, parts of the code may be made available for academic and learning purposes.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question">Can CryptexQ be scaled for global use?</button>
+      <div class="faq-answer">Yes. With the right quantum infrastructure and relay nodes, CryptexQ can scale to support secure communication on a large scale.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question">Why is quantum safety important?</button>
+      <div class="faq-answer">Quantum computers will be able to break classical encryption methods in the future. CryptexQ provides a future-proof approach to secure messaging.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question">How can I try the demo?</button>
+      <div class="faq-answer">You can explore the demo on our website under the "Demo" section. It simulates QKD and secure messaging without the need for specialized hardware.</div>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2026 CryptexQ — Quantum-Safe Messaging Platform</p>
+  </footer>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// FAQ toggle logic
+document.querySelectorAll('.faq-question').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const answer = btn.nextElementSibling;
+    answer.classList.toggle('open');
+    btn.classList.toggle('active');
+  });
+});
+</script>
+{% endblock %}

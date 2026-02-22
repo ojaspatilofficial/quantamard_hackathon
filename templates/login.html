@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+
+{% block title %}CryptexQ — Login{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Page-specific styles for Login page */
+.login-wrapper{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 200px);
+  padding: 2rem 0;
+  margin-top: 2rem;
+}
+
+.login-panel{
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 3rem;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  width: 100%;
+  max-width: 450px;
+}
+
+.login-panel h1{
+  font-size: 2.2rem;
+  background: linear-gradient(90deg, #3B82F6, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.login-panel > p{
+  text-align: center;
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+}
+
+.form-group{
+  margin-bottom: 1.5rem;
+}
+
+.form-group label{
+  display: block;
+  color: var(--accent-blue);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.form-group input{
+  width: 100%;
+  padding: 0.9rem 1.2rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-primary);
+  font-size: 1rem;
+  transition: all 0.3s;
+}
+
+.form-group input:focus{
+  outline: none;
+  border-color: var(--accent-blue);
+  background: rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.remember-row{
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.remember-row input[type="checkbox"]{
+  width: auto;
+}
+
+.remember-row label{
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.login-panel form button{
+  width: 100%;
+  background: var(--accent-blue);
+  color: white;
+  padding: 1rem;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.login-panel form button:hover{
+  background: var(--accent-cyan);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
+}
+
+.extra-links{
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.extra-links p{
+  margin: 0.5rem 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.extra-links a{
+  color: var(--accent-blue);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s;
+}
+
+.extra-links a:hover{
+  color: var(--accent-cyan);
+}
+
+.message-box{
+  position: fixed;
+  top: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(16, 185, 129, 0.95);
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s;
+  z-index: 1000;
+  font-weight: 600;
+}
+
+.message-box.show{
+  opacity: 1;
+  top: 120px;
+}
+
+.message-box.error{
+  background: rgba(239, 68, 68, 0.95);
+}
+
+.message-box.success{
+  background: rgba(16, 185, 129, 0.95);
+}
+
+footer{
+  margin-top: 4rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  padding: 2rem 0;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div id="messageBox" class="message-box"></div>
+
+  <div class="login-wrapper fade-in">
+    <div class="login-panel">
+      <h1>Secure Login</h1>
+      <p>Access your CryptexQ account</p>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label>Email or Username</label>
+          <input type="text" id="username" placeholder="Enter your email or username" required>
+        </div>
+
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="password" placeholder="Enter your password" required>
+        </div>
+
+        <div class="remember-row">
+          <input type="checkbox" id="remember" />
+          <label for="remember">Remember me</label>
+        </div>
+
+        <button type="submit">Login</button>
+
+        <div class="extra-links">
+          <p><a href="{{ url_for('forgetpg_page') }}">Forgot password?</a></p>
+          <p>New here? <a href="{{ url_for('signup_route') }}">Create account</a></p>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2026 CryptexQ — Quantum-Safe Messaging Platform</p>
+  </footer>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function showMessage(text, type){
+  const box = document.getElementById("messageBox");
+  box.textContent = text;
+  box.className = `message-box show ${type}`;
+  setTimeout(() => box.classList.remove("show"), 3000);
+}
+
+document.getElementById("loginForm").addEventListener("submit", async e => {
+  e.preventDefault();
+
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
+
+  try{
+    const res = await fetch("/login", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({username, password})
+    });
+
+    const data = await res.json();
+
+    if(res.ok && data.success){
+      showMessage("Login successful ✓", "success");
+      setTimeout(() => location.href = "/home", 1200);
+    }else{
+      showMessage(data.message || "Invalid credentials", "error");
+    }
+  }catch{
+    showMessage("Server unreachable", "error");
+  }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% block title %}CryptexQ — Sign Up{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Page-specific styles for Signup page */
+.signup-hero{
+  margin-top: 3.5rem;
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.signup-hero h1{
+  font-size: 2.8rem;
+  background: linear-gradient(90deg, #3B82F6, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.signup-wrapper{
+  display: flex;
+  justify-content: center;
+  padding: 2rem 0;
+  margin-bottom: 3rem;
+}
+
+.signup-panel{
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 3rem;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  width: 100%;
+  max-width: 500px;
+}
+
+.signup-panel h2{
+  font-size: 1.8rem;
+  color: var(--accent-blue);
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.form-group{
+  margin-bottom: 1.5rem;
+}
+
+.form-group label{
+  display: block;
+  color: var(--accent-blue);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.form-group input{
+  width: 100%;
+  padding: 0.9rem 1.2rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-primary);
+  font-size: 1rem;
+  transition: all 0.3s;
+}
+
+.form-group input:focus{
+  outline: none;
+  border-color: var(--accent-blue);
+  background: rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.signup-panel form button{
+  width: 100%;
+  background: var(--accent-blue);
+  color: white;
+  padding: 1rem;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.signup-panel form button:hover{
+  background: var(--accent-cyan);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
+}
+
+.extra-links{
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.extra-links p{
+  margin: 0.5rem 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.extra-links a{
+  color: var(--accent-blue);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s;
+}
+
+.extra-links a:hover{
+  color: var(--accent-cyan);
+}
+
+footer{
+  margin-top: 4rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  padding: 2rem 0;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <section class="signup-hero fade-in">
+    <h1>Create Secure Account</h1>
+  </section>
+
+  <div class="signup-wrapper fade-in">
+    <div class="signup-panel">
+      <h2>Create Your Account</h2>
+      <form id="signupForm">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" placeholder="Choose a username" required>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="Enter your email" required>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Enter your password" required>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmpassword">Confirm Password</label>
+          <input type="password" id="confirmpassword" placeholder="Confirm your password" required>
+        </div>
+
+        <button type="submit">Sign Up</button>
+
+        <div class="extra-links">
+          <p>Already have an account? <a href="{{ url_for('login_route') }}">Login</a></p>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2026 CryptexQ — Quantum-Safe Messaging Platform</p>
+  </footer>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById("signupForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const username = document.getElementById("username").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const confirm = document.getElementById("confirmpassword").value.trim();
+
+  if (password !== confirm) {
+    alert("Passwords do not match!");
+    return;
+  }
+
+  try {
+    const response = await fetch("/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, email, password }),
+    });
+
+    const result = await response.json();
+    if (response.ok && result.success) {
+      alert("Signup successful! Redirecting to login...");
+      window.location.href = "/login";
+    } else {
+      alert(result.message || "Signup failed!");
+    }
+  } catch (err) {
+    alert("Server not reachable!");
+  }
+});
+</script>
+{% endblock %}

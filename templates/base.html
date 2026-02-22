@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CryptexQ - Quantum-Safe Messaging{% endblock %}</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Premium Unified Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <!-- Page-specific styles -->
+    {% block extra_css %}{% endblock %}
+
+</head>
+<body>
+    
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <a href="{{ url_for('index_page') }}" class="logo">
+            <i class="fas fa-lock"></i>
+            <span>CryptexQ</span>
+        </a>
+        
+        <ul class="nav-links">
+            <li><a href="{{ url_for('home_page') }}">Home</a></li>
+            
+            <li class="dropdown">
+                <a href="#">Features ▾</a>
+                <div class="dropdown-content">
+                    <a href="{{ url_for('demo_page') }}">Encryption Demo</a>
+                    <a href="{{ url_for('talkroom_page') }}">
+                        Talk Room {% if not session.get('user') %}<span style="color: #f59e0b;">🔒</span>{% endif %}
+                    </a>
+                    <a href="{{ url_for('replay_protection_page') }}">
+                        Replay Protection {% if not session.get('user') %}<span style="color: #f59e0b;">🔒</span>{% endif %}
+                    </a>
+                    <a href="{{ url_for('secure_msg_page') }}">
+                        Secure Messages {% if not session.get('user') %}<span style="color: #f59e0b;">🔒</span>{% endif %}
+                    </a>
+                </div>
+            </li>
+            
+            <li><a href="{{ url_for('about_page') }}">About</a></li>
+            <li><a href="{{ url_for('faq_page') }}">FAQ</a></li>
+            <li><a href="{{ url_for('contact_page') }}">Contact</a></li>
+            
+            <li class="dropdown">
+                <a href="#">More ▾</a>
+                <div class="dropdown-content">
+                    <a href="{{ url_for('terms_page') }}">Terms</a>
+                    <a href="{{ url_for('profile_page') }}">Profile</a>
+                    <a href="{{ url_for('forgetpg_page') }}">Forgot Password</a>
+                </div>
+            </li>
+        </ul>
+        
+        <div class="user-actions">
+            {% if session.get('user') %}
+                <a href="{{ url_for('profile_page') }}" class="btn-login">
+                    <i class="fas fa-user"></i> {{ session['user'] }}
+                </a>
+                <a href="{{ url_for('logout_page') }}" class="btn-signup">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login_route') }}" class="btn-login">Login</a>
+                <a href="{{ url_for('signup_route') }}" class="btn-signup">Sign Up</a>
+            {% endif %}
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Page-specific scripts -->
+    {% block extra_js %}{% endblock %}
+    
+</body>
+</html>

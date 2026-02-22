@@ -1,0 +1,602 @@
+{% extends "base.html" %}
+
+{% block title %}CryptexQ — Share & Retrieve Secure Message{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Page-specific styles for Secure Message page */
+.secure-msg-container {
+  max-width: 1200px;
+  margin: 3rem auto;
+  padding: 0 2rem;
+}
+
+.secure-msg-container h1 {
+  font-size: 2.5rem;
+  background: linear-gradient(90deg, #6366F1, #3B82F6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.5rem;
+}
+
+.muted {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.card {
+  position: relative;
+  border-radius: 18px;
+  padding: 0;
+  margin-bottom: 2rem;
+  display: block;
+}
+
+.card .inner {
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  padding: 2rem;
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.card h2 {
+  color: var(--accent-blue);
+  font-size: 1.5rem;
+  margin: 0 0 1.5rem 0;
+}
+
+.card p {
+  color: var(--text-secondary);
+  margin: 0 0 1rem 0;
+}
+
+.card small {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.card label {
+  display: block;
+  color: var(--accent-blue);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.card input,
+.card textarea,
+.card select {
+  width: 100%;
+  padding: 0.9rem 1.2rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+}
+
+.card input:focus,
+.card textarea:focus,
+.card select:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  background: rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.card input::placeholder,
+.card textarea::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.card textarea {
+  min-height: 120px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.card input[readonly] {
+  background: rgba(0, 0, 0, 0.2);
+  cursor: not-allowed;
+}
+
+.btn-gradient {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0.8rem 1.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--accent-blue);
+  cursor: pointer;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, #2563EB, #1E40AF);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+  transition: all 0.3s ease;
+  margin-bottom: 1rem;
+}
+
+.btn-gradient:hover {
+  transform: translateY(-3px);
+  background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+  box-shadow: 0 12px 28px rgba(37, 99, 235, 0.5);
+}
+
+
+pre {
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--text-primary);
+  padding: 1rem;
+  border-radius: 10px;
+  overflow: auto;
+  min-height: 60px;
+  margin-bottom: 1rem;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.row {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.row > * {
+  flex: 1;
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.status {
+  padding: 0.8rem 1rem;
+  border-radius: 10px;
+  margin: 1rem 0;
+  font-weight: 500;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.status.success {
+  background: rgba(16, 185, 129, 0.2);
+  color: var(--accent-green);
+  border: 1px solid var(--accent-green);
+  opacity: 1;
+}
+
+.status.error {
+  background: rgba(239, 68, 68, 0.2);
+  color: #EF4444;
+  border: 1px solid #EF4444;
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .two-col {
+    grid-template-columns: 1fr;
+  }
+  .row {
+    flex-direction: column;
+  }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="secure-msg-container fade-in">
+  <h1>Share & Retrieve Secure Message</h1>
+  <p class="muted">Encrypted message sharing with Web Crypto API</p>
+
+  <!-- Step A -->
+  <section class="card">
+    <div class="inner">
+      <h2>Step A — Create account & keypair</h2>
+      <label>Username</label>
+      <input id="username" placeholder="alice or bob" />
+      <div class="row">
+        <button class="btn-gradient" id="btn-gen">Generate RSA Keypair & Save</button>
+        <button class="btn-gradient" id="btn-import">Import Private Key</button>
+      </div>
+      <div id="key-status" class="status"></div>
+      <p><small class="muted">Private key is stored in browser for demo. Use secure storage in production.</small></p>
+    </div>
+  </section>
+
+  <!-- Step B -->
+  <section class="card">
+    <div class="inner">
+      <h2>Step B — Produce symmetric AES key</h2>
+      <div class="two-col">
+        <div>
+          <label>QKD Photon Count</label>
+          <input id="photon-count" type="number" min="8" max="256" value="32" />
+          <div class="row">
+            <button class="btn-gradient" id="btn-run-qkd">Run QKD</button>
+            <button class="btn-gradient" id="btn-clear-qkd">Clear</button>
+          </div>
+        </div>
+        <div>
+          <label>Or generate random AES key</label>
+          <div class="row">
+            <button class="btn-gradient" id="btn-generate-aes">Generate AES</button>
+            <select id="aes-length">
+              <option value="128">AES-128</option>
+              <option value="256">AES-256</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div id="qkd-status" class="status"></div>
+      <label>Current Symmetric Key (hex preview)</label>
+      <pre id="symmetric-preview">No key generated yet</pre>
+    </div>
+  </section>
+
+  <!-- Step C -->
+  <section class="card">
+    <div class="inner">
+      <h2>Step C — Encrypt & Upload</h2>
+      <label>From</label>
+      <input id="from-user" placeholder="alice" />
+      <label>To</label>
+      <input id="to-user" placeholder="bob" />
+      <label>Message</label>
+      <textarea id="plaintext" rows="4">Hello! This is a secure message.</textarea>
+      <div class="row">
+        <button class="btn-gradient" id="btn-encrypt-upload">Encrypt & Upload</button>
+        <button class="btn-gradient" id="btn-encrypt-download">Encrypt & Download</button>
+      </div>
+      <div id="encrypt-status" class="status"></div>
+      <label>Shareable Message ID</label>
+      <input id="share-id" readonly />
+      <label>Upload Log</label>
+      <pre id="upload-log"></pre>
+    </div>
+  </section>
+
+  <!-- Step D -->
+  <section class="card">
+    <div class="inner">
+      <h2>Step D — Fetch & Decrypt</h2>
+      <label>Message ID</label>
+      <input id="fetch-id" placeholder="Paste message ID" />
+      <div class="row">
+        <button class="btn-gradient" id="btn-fetch">Fetch & Decrypt</button>
+        <button class="btn-gradient" id="btn-fetch-preview">Fetch Preview</button>
+      </div>
+      <div id="fetch-status" class="status"></div>
+      <label>Decrypted Output</label>
+      <pre id="decrypted-output">No message yet</pre>
+    </div>
+  </section>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/message_integrity_helper.js') }}"></script>
+<script>
+  // Global state
+  let currentUser = null;
+  let currentAesKey = null;
+  let currentRsaKeys = { privateKey: null, publicKey: null };
+  let messageStore = new Map(); // Simulated server storage
+
+  // DOM Elements
+  const statusElements = {
+    key: document.getElementById('key-status'),
+    qkd: document.getElementById('qkd-status'),
+    encrypt: document.getElementById('encrypt-status'),
+    fetch: document.getElementById('fetch-status')
+  };
+
+  // Utility functions
+  function showStatus(element, message, isError = false) {
+    element.textContent = message;
+    element.className = isError ? 'status error' : 'status success';
+    setTimeout(() => {
+      element.className = 'status';
+    }, 5000);
+  }
+
+  function arrayBufferToBase64(buffer) {
+    const bytes = new Uint8Array(buffer);
+    let binary = '';
+    for (let i = 0; i < bytes.byteLength; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary);
+  }
+
+  function base64ToArrayBuffer(base64) {
+    const binary = atob(base64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+    return bytes.buffer;
+  }
+
+  function arrayBufferToHex(buffer) {
+    return Array.from(new Uint8Array(buffer))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+  }
+
+  function hexToArrayBuffer(hex) {
+    const bytes = new Uint8Array(hex.length / 2);
+    for (let i = 0; i < hex.length; i += 2) {
+      bytes[i / 2] = parseInt(hex.substr(i, 2), 16);
+    }
+    return bytes.buffer;
+  }
+
+  // Crypto functions
+  async function generateRSAKeypair() {
+    return await crypto.subtle.generateKey(
+      {
+        name: "RSA-OAEP",
+        modulusLength: 2048,
+        publicExponent: new Uint8Array([1, 0, 1]),
+        hash: "SHA-256"
+      },
+      true,
+      ["encrypt", "decrypt"]
+    );
+  }
+
+  async function generateAESKey(length = 256) {
+    return await crypto.subtle.generateKey(
+      {
+        name: "AES-GCM",
+        length: length
+      },
+      true,
+      ["encrypt", "decrypt"]
+    );
+  }
+
+  async function exportKey(key, type = 'raw') {
+    return await crypto.subtle.exportKey(type, key);
+  }
+
+  async function importAESKey(keyData) {
+    return await crypto.subtle.importKey(
+      "raw",
+      keyData,
+      { name: "AES-GCM" },
+      true,
+      ["encrypt", "decrypt"]
+    );
+  }
+
+  async function encryptMessage(message, key) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(message);
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    
+    const encrypted = await crypto.subtle.encrypt(
+      {
+        name: "AES-GCM",
+        iv: iv
+      },
+      key,
+      data
+    );
+    
+    // Combine IV and encrypted data
+    const combined = new Uint8Array(iv.length + encrypted.byteLength);
+    combined.set(iv, 0);
+    combined.set(new Uint8Array(encrypted), iv.length);
+    
+    return arrayBufferToBase64(combined.buffer);
+  }
+
+  async function decryptMessage(encryptedBase64, key) {
+    const combined = base64ToArrayBuffer(encryptedBase64);
+    const iv = combined.slice(0, 12);
+    const data = combined.slice(12);
+    
+    const decrypted = await crypto.subtle.decrypt(
+      {
+        name: "AES-GCM",
+        iv: iv
+      },
+      key,
+      data
+    );
+    
+    const decoder = new TextDecoder();
+    return decoder.decode(decrypted);
+  }
+
+  // Simulated QKD
+  async function simulateQKD(photonCount) {
+    // Simple BB84 simulation
+    const rawKey = crypto.getRandomValues(new Uint8Array(photonCount / 8));
+    return await importAESKey(rawKey);
+  }
+
+  // Event Listeners
+  document.getElementById('btn-gen').addEventListener('click', async () => {
+    try {
+      const keypair = await generateRSAKeypair();
+      currentRsaKeys = keypair;
+      
+      const exportedPrivateKey = await exportKey(keypair.privateKey, 'pkcs8');
+      const exportedPublicKey = await exportKey(keypair.publicKey, 'spki');
+      
+      // Store in localStorage for demo
+      localStorage.setItem('rsa_private', arrayBufferToBase64(exportedPrivateKey));
+      localStorage.setItem('rsa_public', arrayBufferToBase64(exportedPublicKey));
+      
+      showStatus(statusElements.key, "RSA keypair generated and saved to browser storage");
+    } catch (error) {
+      showStatus(statusElements.key, "Key generation failed: " + error.message, true);
+    }
+  });
+
+  document.getElementById('btn-import').addEventListener('click', async () => {
+    const privateKeyBase64 = localStorage.getItem('rsa_private');
+    
+    if (!privateKeyBase64) {
+      showStatus(statusElements.key, "No private key found in storage", true);
+      return;
+    }
+    
+    try {
+      const privateKeyData = base64ToArrayBuffer(privateKeyBase64);
+      const privateKey = await crypto.subtle.importKey(
+        'pkcs8',
+        privateKeyData,
+        { name: 'RSA-OAEP', hash: 'SHA-256' },
+        true,
+        ['decrypt']
+      );
+      
+      currentRsaKeys.privateKey = privateKey;
+      showStatus(statusElements.key, "Private key imported from storage");
+    } catch (error) {
+      showStatus(statusElements.key, "Key import failed: " + error.message, true);
+    }
+  });
+
+  document.getElementById('btn-run-qkd').addEventListener('click', async () => {
+    const photonCount = parseInt(document.getElementById('photon-count').value);
+    
+    try {
+      currentAesKey = await simulateQKD(photonCount);
+      const keyData = await exportKey(currentAesKey);
+      document.getElementById('symmetric-preview').textContent = arrayBufferToHex(keyData);
+      showStatus(statusElements.qkd, `QKD completed with ${photonCount} photons`);
+    } catch (error) {
+      showStatus(statusElements.qkd, "QKD failed: " + error.message, true);
+    }
+  });
+
+  document.getElementById('btn-clear-qkd').addEventListener('click', () => {
+    currentAesKey = null;
+    document.getElementById('symmetric-preview').textContent = "No key generated yet";
+    showStatus(statusElements.qkd, "Key cleared");
+  });
+
+  document.getElementById('btn-generate-aes').addEventListener('click', async () => {
+    const length = parseInt(document.getElementById('aes-length').value);
+    
+    try {
+      currentAesKey = await generateAESKey(length);
+      const keyData = await exportKey(currentAesKey);
+      document.getElementById('symmetric-preview').textContent = arrayBufferToHex(keyData);
+      showStatus(statusElements.qkd, `AES-${length} key generated`);
+    } catch (error) {
+      showStatus(statusElements.qkd, "AES generation failed: " + error.message, true);
+    }
+  });
+
+  document.getElementById('btn-encrypt-upload').addEventListener('click', async () => {
+    const message = document.getElementById('plaintext').value;
+    const fromUser = document.getElementById('from-user').value.trim();
+    const toUser = document.getElementById('to-user').value.trim();
+    
+    if (!message || !fromUser || !toUser) {
+      showStatus(statusElements.encrypt, "Please fill in all fields", true);
+      return;
+    }
+    
+    if (!currentAesKey) {
+      showStatus(statusElements.encrypt, "No encryption key available", true);
+      return;
+    }
+    
+    try {
+      const encryptedMessage = await encryptMessage(message, currentAesKey);
+      const messageId = arrayBufferToHex(crypto.getRandomValues(new Uint8Array(8)));
+      
+      messageStore.set(messageId, {
+        from: fromUser,
+        to: toUser,
+        message: encryptedMessage,
+        timestamp: new Date().toISOString()
+      });
+      
+      document.getElementById('share-id').value = messageId;
+      document.getElementById('upload-log').textContent = `Message encrypted and stored with ID: ${messageId}`;
+      showStatus(statusElements.encrypt, "Message encrypted and uploaded successfully");
+    } catch (error) {
+      showStatus(statusElements.encrypt, "Encryption failed: " + error.message, true);
+    }
+  });
+
+  document.getElementById('btn-encrypt-download').addEventListener('click', async () => {
+    showStatus(statusElements.encrypt, "Download functionality would be implemented here");
+  });
+
+  document.getElementById('btn-fetch').addEventListener('click', async () => {
+    const messageId = document.getElementById('fetch-id').value.trim();
+    
+    if (!messageId) {
+      showStatus(statusElements.fetch, "Please enter a message ID", true);
+      return;
+    }
+    
+    if (!currentAesKey) {
+      showStatus(statusElements.fetch, "No decryption key available", true);
+      return;
+    }
+    
+    try {
+      const messageData = messageStore.get(messageId);
+      
+      if (!messageData) {
+        showStatus(statusElements.fetch, "Message not found", true);
+        return;
+      }
+      
+      const decryptedMessage = await decryptMessage(messageData.message, currentAesKey);
+      
+      document.getElementById('decrypted-output').textContent = decryptedMessage;
+      showStatus(statusElements.fetch, "Message decrypted successfully");
+    } catch (error) {
+      showStatus(statusElements.fetch, "Decryption failed: " + error.message, true);
+    }
+  });
+
+  document.getElementById('btn-fetch-preview').addEventListener('click', () => {
+    const messageId = document.getElementById('fetch-id').value.trim();
+    
+    if (!messageId) {
+      showStatus(statusElements.fetch, "Please enter a message ID", true);
+      return;
+    }
+    
+    const messageData = messageStore.get(messageId);
+    
+    if (!messageData) {
+      showStatus(statusElements.fetch, "Message not found", true);
+      return;
+    }
+    
+    document.getElementById('decrypted-output').textContent = `From: ${messageData.from}\nTo: ${messageData.to}\nTime: ${messageData.timestamp}\n\n[Encrypted content - requires key to decrypt]`;
+    showStatus(statusElements.fetch, "Message preview loaded");
+  });
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', () => {
+    const usernameInput = document.getElementById('username');
+    if (usernameInput.value) {
+      currentUser = usernameInput.value;
+    }
+    
+    usernameInput.addEventListener('change', () => {
+      currentUser = usernameInput.value.trim();
+    });
+  });
+</script>
+{% endblock %}

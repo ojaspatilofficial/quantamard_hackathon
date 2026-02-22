@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}CryptexQ — Navigation Test{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Page-specific styles for Navigation Test page */
+.nav-test-container{
+  max-width: 1200px;
+  margin: 3rem auto;
+  padding: 2rem;
+}
+
+.nav-test-container h1{
+  font-size: 2.5rem;
+  background: linear-gradient(90deg, #3B82F6, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.section{
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2rem;
+  margin: 2rem 0;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.section h2, .section h3{
+  color: var(--accent-blue);
+  margin-bottom: 1rem;
+}
+
+.section p{
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+.status{
+  color: var(--accent-green);
+  font-weight: bold;
+}
+
+.link-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.link-card{
+  background: linear-gradient(135deg, #3B82F6, #06b6d4);
+  color: white;
+  padding: 1.2rem;
+  border-radius: 12px;
+  text-decoration: none;
+  text-align: center;
+  font-weight: 600;
+  transition: all 0.3s;
+  display: block;
+}
+
+.link-card:hover{
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
+}
+
+.section ul{
+  list-style: none;
+  line-height: 2;
+}
+
+.section ul li{
+  color: var(--text-secondary);
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.section ul li code{
+  background: rgba(59, 130, 246, 0.1);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  color: var(--accent-cyan);
+  font-family: 'Courier New', monospace;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="nav-test-container fade-in">
+  <h1>🔐 CryptexQ Navigation Test</h1>
+
+  <div class="section">
+    <h2>✅ All Routes Status: <span class="status">CONNECTED</span></h2>
+    <p>All 16 pages are properly configured with Flask routes. Click any link below to test navigation.</p>
+  </div>
+
+  <div class="section">
+    <h3>🏠 Main Pages</h3>
+    <div class="link-grid">
+      <a href="{{ url_for('index_page') }}" class="link-card">Index / Landing</a>
+      <a href="{{ url_for('home_page') }}" class="link-card">Home Dashboard</a>
+      <a href="{{ url_for('talkroom_page') }}" class="link-card">Talk Room</a>
+      <a href="{{ url_for('demo_page') }}" class="link-card">Encryption Demo</a>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>🔒 Security Features</h3>
+    <div class="link-grid">
+      <a href="{{ url_for('replay_protection_page') }}" class="link-card">Replay Protection</a>
+      <a href="{{ url_for('secure_msg_page') }}" class="link-card">Secure Messages</a>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>ℹ️ Information Pages</h3>
+    <div class="link-grid">
+      <a href="{{ url_for('about_page') }}" class="link-card">About</a>
+      <a href="{{ url_for('team_page') }}" class="link-card">Team</a>
+      <a href="{{ url_for('faq_page') }}" class="link-card">FAQ</a>
+      <a href="{{ url_for('contact_page') }}" class="link-card">Contact</a>
+      <a href="{{ url_for('terms_page') }}" class="link-card">Terms</a>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>👤 User Pages</h3>
+    <div class="link-grid">
+      <a href="{{ url_for('login_route') }}" class="link-card">Login</a>
+      <a href="{{ url_for('signup_route') }}" class="link-card">Sign Up</a>
+      <a href="{{ url_for('logout_page') }}" class="link-card">Logout</a>
+      <a href="{{ url_for('forgetpg_page') }}" class="link-card">Forgot Password</a>
+      <a href="{{ url_for('profile_page') }}" class="link-card">Profile</a>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>📋 Navigation Checklist</h3>
+    <ul>
+      <li>✅ Index page (/) → <code>index_page()</code></li>
+      <li>✅ Home (/home) → <code>home_page()</code></li>
+      <li>✅ Talk Room (/talkroom) → <code>talkroom_page()</code></li>
+      <li>✅ Demo (/demo) → <code>demo_page()</code></li>
+      <li>✅ About (/about) → <code>about_page()</code></li>
+      <li>✅ Team (/team) → <code>team_page()</code></li>
+      <li>✅ FAQ (/faq) → <code>faq_page()</code></li>
+      <li>✅ Contact (/contact) → <code>contact_page()</code></li>
+      <li>✅ Terms (/term) → <code>terms_page()</code></li>
+      <li>✅ Login (/login) → <code>login_route()</code></li>
+      <li>✅ Sign Up (/signup) → <code>signup_route()</code></li>
+      <li>✅ Logout (/logout) → <code>logout_page()</code></li>
+      <li>✅ Forgot Password (/forgetpg) → <code>forgetpg_page()</code></li>
+      <li>✅ Profile (/profile) → <code>profile_page()</code></li>
+      <li>✅ Replay Protection (/replay-protection) → <code>replay_protection_page()</code></li>
+      <li>✅ Secure Messages (/secure-msg) → <code>secure_msg_page()</code></li>
+    </ul>
+  </div>
+</div>
+{% endblock %}

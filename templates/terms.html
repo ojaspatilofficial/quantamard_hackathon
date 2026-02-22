@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}CryptexQ — Terms & Conditions{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Page-specific styles for Terms page */
+.terms-hero{
+  margin-top: 3.5rem;
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.terms-hero h1{
+  font-size: 2.8rem;
+  background: linear-gradient(90deg, #3B82F6, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 1rem;
+}
+
+.terms-hero p{
+  max-width: 700px;
+  margin: 0 auto;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+}
+
+.terms-panel{
+  margin-top: 3rem;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 3rem;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.terms-panel h2{
+  color: var(--accent-blue);
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+}
+
+.terms-panel p{
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+  line-height: 1.8;
+}
+
+.terms-list{
+  margin-top: 2rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.term{
+  padding: 1.2rem 1.5rem;
+  background: rgba(59, 130, 246, 0.05);
+  border-left: 3px solid var(--accent-blue);
+  border-radius: 10px;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  transition: all 0.3s;
+}
+
+.term:hover{
+  background: rgba(59, 130, 246, 0.1);
+  transform: translateX(5px);
+  box-shadow: 0 5px 20px rgba(59, 130, 246, 0.2);
+}
+
+footer{
+  margin-top: 4rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  padding: 2rem 0;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <section class="terms-hero fade-in">
+    <h1>Terms & Conditions</h1>
+    <p>
+      Legal terms governing the use of CryptexQ's quantum-safe
+      end-to-end encrypted communication platform.
+    </p>
+  </section>
+
+  <div class="terms-panel fade-in">
+    <h2>Use of CryptexQ</h2>
+
+    <p>
+      By accessing or using CryptexQ, you agree to comply with the following
+      terms. CryptexQ is designed for secure, quantum-resistant communication
+      using modern cryptographic protocols.
+    </p>
+
+    <div class="terms-list">
+      <div class="term">1. Users must provide accurate account information and safeguard credentials.</div>
+      <div class="term">2. All messages are end-to-end encrypted; content responsibility lies with users.</div>
+      <div class="term">3. Unauthorized access, tampering, or misuse is strictly prohibited.</div>
+      <div class="term">4. Minimal metadata may be collected for performance and security improvements.</div>
+      <div class="term">5. CryptexQ is not liable for message loss due to external network failures.</div>
+      <div class="term">6. Quantum-derived and cryptographic keys must remain private.</div>
+      <div class="term">7. Accounts violating policies may be suspended or terminated.</div>
+      <div class="term">8. All intellectual property belongs to the CryptexQ project.</div>
+      <div class="term">9. Cryptographic mechanisms are provided for research and secure communication.</div>
+      <div class="term">10. Continued usage implies acceptance of updated terms.</div>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2026 CryptexQ — Quantum-Safe Messaging Platform</p>
+  </footer>
+</div>
+{% endblock %}

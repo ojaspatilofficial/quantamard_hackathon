@@ -1,0 +1,157 @@
+# ========================================
+# CRYPTEXQ - PRODUCTION .gitignore
+# ========================================
+
+# -------------------
+# PYTHON RUNTIME
+# -------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# -------------------
+# VIRTUAL ENVIRONMENTS
+# -------------------
+venv/
+.venv/
+ENV/
+env/
+virtualenv/
+.virtualenvs/
+*.venv
+
+# -------------------
+# FLASK RUNTIME
+# -------------------
+instance/
+.webassets-cache
+uploads/
+flask_session/
+
+# -------------------
+# SECURITY FILES (CRITICAL - NEVER COMMIT)
+# -------------------
+.hmac_secret
+session_key.bin
+*.pem
+*.key
+*.crt
+*.cert
+*.csr
+*.p12
+*.pfx
+certs/ca/ca.key
+certs/server/server.key
+certs/legacy/*.pem
+
+# Keep cert generation scripts only
+!certs/ca/generate_ca_cert.py
+!certs/server/generate_server_cert.py
+
+# -------------------
+# ENVIRONMENT VARIABLES
+# -------------------
+.env
+.env.*
+!.env.example
+
+# -------------------
+# DATABASES
+# -------------------
+*.db
+*.sqlite
+*.sqlite3
+*.sql
+*.dump
+
+# -------------------
+# LOGS
+# -------------------
+*.log
+logs/
+*.log.*
+
+# -------------------
+# IDE & EDITORS
+# -------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+*~
+.project
+.pydevproject
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# -------------------
+# OS FILES
+# -------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# -------------------
+# NODE.JS (if frontend tools used)
+# -------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.next/
+.nuxt/
+dist/
+build/
+.cache/
+
+# -------------------
+# TESTING & COVERAGE
+# -------------------
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+
+# -------------------
+# TEMPORARY FILES
+# -------------------
+*.tmp
+*.temp
+*.bak
+*.backup
+temp/
+tmp/
+
+# -------------------
+# GIT
+# -------------------
+*.orig
+*.rej
