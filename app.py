@@ -1,5 +1,5 @@
 import os
-import ssl
+import logging
 from flask import Flask, request, jsonify, render_template, session, redirect, url_for, flash
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit
@@ -12,6 +12,21 @@ import io
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 
+# Eventlet monkey patching for async Socket.IO (must be first)
+try:
+    import eventlet
+    eventlet.monkey_patch()
+except ImportError:
+    pass  # Eventlet will be installed in production
+
+# Configure structured logging
+logging.basicConfig(
+    level=logging.INFO if os.environ.get('FLASK_ENV') == 'production' else logging.DEBUG,
+    format='%(asctime)s [%(levelname)s] %(name)s: %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+logger = logging.getLogger(__name__)
+
 # Suppress oqs auto-install prompts and errors
 oqs = None
 old_stderr = sys.stderr
@@ -22,12 +37,11 @@ try:
     import oqs  # pip install oqs
     sys.stderr = old_stderr
     sys.stdin = old_stdin
-    print("[OK] OQS library loaded successfully")
+    logger.info("OQS library loaded successfully")
 except Exception as e:
     sys.stderr = old_stderr
     sys.stdin = old_stdin
-    print(f"[WARNING] Could not import oqs library: {type(e).__name__}")
-    print("  Application will run with simulated PQC functionality")
+    logger.warning(f"Could not import oqs library: {type(e).__name__} - using simulated PQC")
     oqs = None
 
 import socket
@@ -73,15 +87,37 @@ Security Notes:
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24))
-CORS(app, supports_credentials=True)
 
+# Session security configuration
+app.config['SESSION_COOKIE_SECURE'] = os.environ.get('FLASK_ENV') == 'production'
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['PERMANENT_SESSION_LIFETIME'] = 3600  # 1 hour
+
+# CORS configuration with environment control
+CORS_ORIGIN = os.environ.get('CORS_ORIGIN', '*')
+CORS(app, supports_credentials=True, origins=CORS_ORIGIN)
+
+# Socket.IO with environment-controlled CORS and eventlet
 socketio = SocketIO(
     app,
-    cors_allowed_origins="*",
-    async_mode="threading",   # ✅ confirmed working for this version set
+    cors_allowed_origins=CORS_ORIGIN,
+    async_mode="eventlet",
     logger=False,
     engineio_logger=False
 )
+
+# Security headers middleware
+@app.after_request
+def set_security_headers(response):
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    # Only add HSTS in production with HTTPS
+    if os.environ.get('FLASK_ENV') == 'production':
+        response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    return response
 
 
 # ---------------- DATABASE -----------------
@@ -94,10 +130,9 @@ try:
     messages_col = db["messages"]
     users_col = db["users"]
     sessions_col = db["sessions"]
-    print("[OK] MongoDB connected successfully")
+    logger.info("MongoDB connected successfully")
 except Exception as e:
-    print(f"[WARNING] MongoDB connection failed: {e}")
-    print("  Application will run without database persistence")
+    logger.warning(f"MongoDB connection failed: {e} - running without database persistence")
     client = None
     db = None
     messages_col = None
@@ -273,7 +308,7 @@ USERS = {}  # single shared dictionary for all connections
 
 @socketio.on("connect")
 def on_connect():
-    print(f"[+] Client connected: {request.sid}")
+    logger.info(f"Client connected: {request.sid}")
 
 @socketio.on("disconnect")
 def on_disconnect(reason=None):
@@ -287,7 +322,7 @@ def on_disconnect(reason=None):
             break
 
     if disconnected_user:
-        print(f"[-] {disconnected_user} disconnected")
+        logger.info(f"{disconnected_user} disconnected")
 
     # Flask-SocketIO v6+ doesn’t support broadcast=True anymore
     socketio.emit("online_users", {"users": list(USERS.keys())})
@@ -295,14 +330,14 @@ def on_disconnect(reason=None):
 
 @socketio.on("register")
 def handle_register(data):
-    print("\n==== [REGISTER EVENT TRIGGERED] ====")
-    print("Raw data received:", data)
+    logger.debug("Register event triggered")
+    logger.debug(f"Registration data: {data}")
 
     username = data.get("username")
     pub_b64 = data.get("x25519_pub_b64")
 
     if not username or not pub_b64:
-        print("[ERROR] Invalid data — username or pub key missing")
+        logger.error("Invalid registration data - missing username or pub key")
         emit("error", {"message": "Invalid registration data"})
         return
 
@@ -323,7 +358,7 @@ def handle_register(data):
         USERS[username]["kyber"] = {"public": pk, "private": sk}
         kyber_pub_b64 = base64.b64encode(pk).decode()
     except Exception as e:
-        print("[KYBER ERROR - simulated mode]", e)
+        logger.warning(f"Kyber generation failed (simulated mode): {e}")
         kyber_pub_b64 = ""
 
     emit("registered", {"username": username, "kyber_pub_b64": kyber_pub_b64})
@@ -331,9 +366,8 @@ def handle_register(data):
     # ✅ emit to all clients (no 'broadcast' argument)
     socketio.emit("online_users", {"users": list(USERS.keys())})
 
-    print(f"[REGISTER] {username} ({request.sid})")
-    print("[DEBUG] USERS dict:", USERS)
-    print("=====================================\n")
+    logger.info(f"User registered: {username} (sid: {request.sid})")
+    logger.debug(f"Active users: {list(USERS.keys())}")
 
 # -------------- HYBRID (Kyber+AES) -----------------
 
@@ -375,18 +409,18 @@ def handle_request_start(data):
             with oqs.KeyEncapsulation(KEM_NAME) as kem_dec:
                 ss_peer = kem_dec.decap_secret(ciphertext, peer_sk)
 
-            print("[HYBRID PQC + AES] Using real Kyber512 KEM")
+            logger.debug("Using real Kyber512 KEM")
 
         else:
             # Fallback demo mode – simulate PQC shared secret
-            print("[HYBRID PQC + AES] oqs.KeyEncapsulation not available, using simulated PQC key")
+            logger.debug("oqs.KeyEncapsulation not available, using simulated PQC key")
             ciphertext = os.urandom(96)
             ss_initiator = os.urandom(32)
             ss_peer = ss_initiator
 
     except Exception as e:
         # If anything explodes, still fall back to a demo shared key
-        print("[HYBRID ERROR] Kyber failed, falling back to simulated key:", e)
+        logger.warning(f"Kyber failed, using simulated key: {e}")
         ciphertext = os.urandom(96)
         ss_initiator = os.urandom(32)
         ss_peer = ss_initiator
@@ -421,8 +455,8 @@ def handle_request_start(data):
     )
 
     emit("session_initiated", {"ok": True})
-    print(f"[HYBRID PQC + AES] Session started {initiator} <-> {peer}")
-    print(f"[HYBRID PQC + AES] Using Kyber512 KEM + AES-256-GCM encryption")
+    logger.info(f"Hybrid PQC+AES session: {initiator} <-> {peer}")
+    logger.debug("Using Kyber512 KEM + AES-256-GCM")
 
 
     # Send to initiator
@@ -450,8 +484,8 @@ def handle_request_start(data):
     )
 
     emit("session_initiated", {"ok": True})
-    print(f"[HYBRID PQC + AES] Session started {initiator} <-> {peer}")
-    print(f"[HYBRID PQC + AES] Using Kyber512 KEM + AES-256-GCM encryption")
+    logger.info(f"Hybrid PQC+AES session: {initiator} <-> {peer}")
+    logger.debug("Using Kyber512 KEM + AES-256-GCM")
 
 
 # -------------- QKD + AES MODE (Simulated Quantum Key Distribution) ------------
@@ -505,8 +539,8 @@ def handle_start_qkd_session(data):
         room=p_sid,
     )
 
-    print(f"[QKD + AES] Shared key established between {initiator} and {peer}")
-    print(f"[QKD + AES] Key size: {len(shared_key_bytes)} bytes (AES-256)")
+    logger.info(f"QKD+AES session: {initiator} <-> {peer}")
+    logger.debug(f"Shared key size: {len(shared_key_bytes)} bytes (AES-256)")
 
 
 # -------------- ENCRYPTED CHAT (AES-GCM + HMAC Integrity) ----------------------
@@ -556,7 +590,7 @@ def handle_encrypted_message(data):
         if not is_valid:
             # Message integrity failed - reject and notify sender
             emit("error", result)
-            print(f"[INTEGRITY VIOLATION] Rejected message from {sender} to {to}")
+            logger.warning(f"INTEGRITY VIOLATION: Rejected message from {sender} to {to}")
             return
     
     # Add/refresh integrity signature before forwarding to recipient
@@ -579,74 +613,41 @@ def handle_encrypted_message(data):
         room=request.sid,
     )
 
-    print(f"[MSG] {sender} -> {to} (AES-GCM encrypted, HMAC-SHA256 integrity: OK)")
+    logger.info(f"Message: {sender} -> {to} (AES-GCM encrypted, HMAC-SHA256 verified)")
     
 if __name__ == "__main__":
-    import sys
-    use_ssl = "--ssl" in sys.argv
+    # Production-ready server startup
+    PORT = int(os.environ.get('PORT', 5000))
+    DEBUG = os.environ.get('FLASK_ENV') != 'production'
     
-    if use_ssl:
-        print("=" * 70)
-        print("CryptexQ Server (HTTPS - Secure Mode)")
-        print("=" * 70)
-        print("[*] Modes: QKD + AES | Hybrid PQC-Kyber + AES")
-        print("[*] Features: AES-256-GCM encryption + HMAC-SHA256 integrity")
-        print("[*] Message integrity layer: ACTIVE")
-        print("=" * 70)
-        print("\nOpening landing page at: https://localhost:5000")
-        print("   (Accept certificate warning in browser)")
-        print("=" * 70)
-        
-        # Auto-open browser to landing page
+    logger.info("="  * 70)
+    logger.info("CryptexQ - Quantum-Safe Messaging Platform")
+    logger.info("="  * 70)
+    logger.info("Modes: QKD + AES | Hybrid PQC-Kyber + AES")
+    logger.info("Features: AES-256-GCM encryption + HMAC-SHA256 integrity")
+    logger.info("Message integrity layer: ACTIVE")
+    logger.info(f"Environment: {'PRODUCTION' if not DEBUG else 'DEVELOPMENT'}")
+    logger.info(f"Port: {PORT}")
+    logger.info(f"CORS: {CORS_ORIGIN}")
+    logger.info("="  * 70)
+    
+    # Auto-open browser in development only
+    if DEBUG:
         import webbrowser
         import threading
         def open_browser():
             import time
             time.sleep(2)
-            webbrowser.open('https://localhost:5000')
+            webbrowser.open(f'http://localhost:{PORT}')
         threading.Thread(target=open_browser, daemon=True).start()
-        
-        context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-        context.load_cert_chain(
-            "certs/server/server.crt",
-            "certs/server/server.key"
-        )
-        socketio.run(
-            app,
-            host="0.0.0.0",
-            port=5000,
-            debug=False,
-            ssl_context=context,
-            allow_unsafe_werkzeug=True
-        )
-    else:
-        print("=" * 70)
-        print("CryptexQ Server (HTTP - Development Mode)")
-        print("=" * 70)
-        print("[*] Modes: QKD + AES | Hybrid PQC-Kyber + AES")
-        print("[*] Features: AES-256-GCM encryption + HMAC-SHA256 integrity")
-        print("[*] Message integrity layer: ACTIVE")
-        print("=" * 70)
-        print("\nOpening landing page at: http://localhost:5000")
-        print("   (Use --ssl flag for HTTPS mode)")
-        print("=" * 70)
-        
-        # Auto-open browser to landing page
-        import webbrowser
-        import threading
-        def open_browser():
-            import time
-            time.sleep(2)
-            webbrowser.open('http://localhost:5000')
-        threading.Thread(target=open_browser, daemon=True).start()
-        
-        socketio.run(
-            app,
-            host="0.0.0.0",
-            port=5000,
-            debug=False,
-            allow_unsafe_werkzeug=True
-        )
+    
+    # Start server (Render uses Gunicorn in production via Procfile)
+    socketio.run(
+        app,
+        host="0.0.0.0",
+        port=PORT,
+        debug=DEBUG
+    )
 
 
 

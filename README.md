@@ -6,11 +6,12 @@ A secure real-time messaging application featuring Post-Quantum Cryptography (PQ
 
 - **Post-Quantum Cryptography**: Kyber512 key encapsulation (simulated)
 - **Hybrid Encryption**: QKD + AES-256-GCM
-- **Message Integrity**: HMAC-SHA256 signatures
-- **Real-time Chat**: WebSocket-based secure messaging
+- **Message Integrity**: HMAC-SHA256 signatures with third-party verification
+- **Real-time Chat**: WebSocket-based secure messaging with eventlet async
 - **Authentication**: Session-based login with PBKDF2-SHA256 password hashing
 - **Replay Protection**: Timestamp-based attack prevention
-- **SSL/TLS Support**: HTTPS with self-signed certificates for local development
+- **Security Hardening**: Security headers, HTTPONLY/SECURE cookies, CORS control
+- **Production-Ready**: Structured logging, environment-based configuration
 
 ## 📋 Tech Stack
 
@@ -44,24 +45,31 @@ python app.py
 
 The server will start at `http://localhost:5000` and automatically open in your browser.
 
-### HTTPS Mode
+### Environment Variables (Optional)
 
-```bash
-python app.py --ssl
+Create a `.env` file for custom configuration:
+
+```env
+SECRET_KEY=your-secret-key-here
+MONGO_URI=mongodb://localhost:27017/cryptexq
+CRYPTEXQ_HMAC_SECRET=your-hmac-secret-here
+CORS_ORIGIN=http://localhost:3000
+FLASK_ENV=development
+PORT=5000
 ```
-
-Access at `https://localhost:5000` (accept certificate warning for self-signed cert)
 
 ## 🌐 Deployment to Render
 
 1. Push code to GitHub
 2. Create new Web Service on Render
 3. Connect your GitHub repository
-4. Set environment variables:
-   - `MONGO_URI`: Your MongoDB connection string
-   - `SECRET_KEY`: Flask secret key
-   - `CRYPTEXQ_HMAC_SECRET`: HMAC secret for message integrity
-5. Deploy!
+3. Set environment variables:
+   - `SECRET_KEY`: Flask secret key (required)
+   - `CRYPTEXQ_HMAC_SECRET`: HMAC secret for message integrity (required)
+   - `MONGO_URI`: Your MongoDB connection string (optional, demo mode works without)
+   - `CORS_ORIGIN`: Allowed CORS origins (default: `*`)
+   - `FLASK_ENV`: Set to `production` (default: `development`)
+4. Deploy!
 
 Render will automatically use the `Procfile` and `requirements.txt`.
 
