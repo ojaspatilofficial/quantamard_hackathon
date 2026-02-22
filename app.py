@@ -98,11 +98,10 @@ app.config['PERMANENT_SESSION_LIFETIME'] = 3600  # 1 hour
 CORS_ORIGIN = os.environ.get('CORS_ORIGIN', '*')
 CORS(app, supports_credentials=True, origins=CORS_ORIGIN)
 
-# Socket.IO with environment-controlled CORS and eventlet
+# Socket.IO with environment-controlled CORS (async_mode auto-detected by Gunicorn worker class)
 socketio = SocketIO(
     app,
     cors_allowed_origins=CORS_ORIGIN,
-    async_mode="eventlet",
     logger=False,
     engineio_logger=False
 )
