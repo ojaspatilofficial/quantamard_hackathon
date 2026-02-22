@@ -1,3 +1,7 @@
+# Eventlet monkey patching MUST be first - before any other imports
+import eventlet
+eventlet.monkey_patch()
+
 import os
 import logging
 from flask import Flask, request, jsonify, render_template, session, redirect, url_for, flash
@@ -11,13 +15,6 @@ import sys
 import io
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
-
-# Eventlet monkey patching for async Socket.IO (must be first)
-try:
-    import eventlet
-    eventlet.monkey_patch()
-except ImportError:
-    pass  # Eventlet will be installed in production
 
 # Configure structured logging
 logging.basicConfig(
