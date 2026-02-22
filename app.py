@@ -1,3 +1,10 @@
+# Eventlet monkey patching MUST be first - before any other imports
+try:
+    import eventlet
+    eventlet.monkey_patch()
+except ImportError:
+    pass
+
 import os
 import logging
 from flask import Flask, request, jsonify, render_template, session, redirect, url_for, flash
@@ -95,7 +102,7 @@ CORS(app, supports_credentials=True, origins=CORS_ORIGIN)
 socketio = SocketIO(
     app,
     cors_allowed_origins=CORS_ORIGIN,
-    async_mode="gevent",
+    async_mode="eventlet",
     logger=False,
     engineio_logger=False
 )
